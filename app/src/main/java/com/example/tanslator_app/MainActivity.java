@@ -23,24 +23,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        TextView family = findViewById(R.id.family);
+        family.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, FamilyActivity.class);
+                startActivity(intent);
+            }
+        });
 
-    }
-    public void openFamilyPage(View view) {
-        Intent intent = new Intent(this, FamilyActivity.class);
-        startActivity(intent);
+        TextView phrases = findViewById(R.id.phrases);
+        phrases.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PhrasesActivity.class);
+                startActivity(intent);
+            }
+        });
 
-    }
-    public void openColorsPage(View view) {
-        Intent intent = new Intent(this, ColorsActivity.class);
-        startActivity(intent);
-
-    }
-    public void openPhrasesPage(View view) {
-        Intent intent = new Intent(this, PhrasesActivity.class);
-        startActivity(intent);
-
-    }
-
-
-
+        TextView colors = findViewById(R.id.colors);
+        colors.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ColorsActivity.class);
+                startActivity(intent);
+            }
+        });
+   }
 }
