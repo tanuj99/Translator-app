@@ -16,10 +16,11 @@ public class Word {
         mSoundId = soundId;
     }
 
-    public Word(String defaultTrans , String frenchTrans)  //Constructor Overloading
+    public Word(String defaultTrans , String frenchTrans, int soundId)  //Constructor Overloading
     {
         mdefaultTrans = defaultTrans;
         mfrenchTrans = frenchTrans;
+        mSoundId = soundId;
     }
 
     public  String getMdefaultTrans(){

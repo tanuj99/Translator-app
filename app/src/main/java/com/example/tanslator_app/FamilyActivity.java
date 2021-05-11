@@ -1,6 +1,9 @@
 package com.example.tanslator_app;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,6 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 
 public class FamilyActivity extends AppCompatActivity {
+    private MediaPlayer mediaPlayer;
+
+    private  MediaPlayer.OnCompletionListener mcompletionListener = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            releaseMediaPlayer();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,5 +55,31 @@ public class FamilyActivity extends AppCompatActivity {
         // Make the {@link ListView} use the {@link WordAdapter} we created above, so that the
         // {@link ListView} will display list items for each {@link Word} in the list.
         listView.setAdapter(itemsAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Word word = words.get(position);
+
+                releaseMediaPlayer();
+                mediaPlayer = MediaPlayer.create(FamilyActivity.this , word.getmSoundId());
+                mediaPlayer.start();
+
+                mediaPlayer.setOnCompletionListener(mcompletionListener);
+            }
+        });
+    }
+    private void releaseMediaPlayer() {
+        // If the media player is not null, then it may be currently playing a sound.
+        if (mediaPlayer != null) {
+            // Regardless of the current state of the media player, release its resources
+            // because we no longer need it.
+            mediaPlayer.release();
+
+            // Set the media player back to null. For our code, we've decided that
+            // setting the media player to null is an easy way to tell that the media player
+            // is not configured to play an audio file at the moment.
+            mediaPlayer = null;
+        }
     }
 }
