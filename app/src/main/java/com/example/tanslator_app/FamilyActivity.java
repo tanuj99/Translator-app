@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -68,6 +69,13 @@ public class FamilyActivity extends AppCompatActivity {
                 mediaPlayer.setOnCompletionListener(mcompletionListener);
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Toast.makeText(this , "Stopped",Toast.LENGTH_LONG).show();
+        releaseMediaPlayer();
     }
     private void releaseMediaPlayer() {
         // If the media player is not null, then it may be currently playing a sound.
