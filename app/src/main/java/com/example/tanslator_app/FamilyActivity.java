@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -74,7 +73,7 @@ public class FamilyActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Toast.makeText(this , "Stopped",Toast.LENGTH_LONG).show();
+        //Toast.makeText(this , "Stopped",Toast.LENGTH_LONG).show();
         releaseMediaPlayer();
     }
     private void releaseMediaPlayer() {
