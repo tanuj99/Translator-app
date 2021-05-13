@@ -1,17 +1,39 @@
 package com.example.tanslator_app;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
-public class ColorsActivity extends AppCompatActivity {
+
+public class ColorFragment extends Fragment {
     private MediaPlayer mediaPlayer;
+
+    private AudioManager maudioManager;
+
+    private AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
+                    focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                mediaPlayer.pause();
+                mediaPlayer.seekTo(0);
+            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                mediaPlayer.start();
+            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                releaseMediaPlayer();
+            }
+        }
+    };
 
     private  MediaPlayer.OnCompletionListener mcompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
@@ -20,12 +42,20 @@ public class ColorsActivity extends AppCompatActivity {
         }
     };
 
+    public ColorFragment() {
+        // Required empty public constructor
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_colors);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.words_list, container, false);
+
+        maudioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
 
         ArrayList<Word> words = new ArrayList<Word>();
+
         words.add(new Word("red", "weṭeṭṭi", R.drawable.color_red, R.raw.color_red));
         words.add(new Word("mustard yellow", "chiwiiṭә", R.drawable.color_mustard_yellow,
                 R.raw.color_mustard_yellow));
@@ -37,17 +67,13 @@ public class ColorsActivity extends AppCompatActivity {
         words.add(new Word("black", "kululli", R.drawable.color_black, R.raw.color_black));
         words.add(new Word("white", "kelelli", R.drawable.color_white, R.raw.color_white));
 
-        // Create an {@link WordAdapter}, whose data source is a list of {@link Word}s. The
-        // adapter knows how to create list items for each item in the list.
-        WordAdapter itemsAdapter = new WordAdapter(this, words,R.color.category_colors);
 
-        // Find the {@link ListView} object in the view hierarchy of the {@link Activity}.
-        // There should be a {@link ListView} with the view ID called list, which is declared in the
-        // word_list.xml layout file.
-        ListView listView = (ListView) findViewById(R.id.list);
 
-        // Make the {@link ListView} use the {@link WordAdapter} we created above, so that the
-        // {@link ListView} will display list items for each {@link Word} in the list.
+
+        WordAdapter itemsAdapter = new WordAdapter(getActivity(), words,R.color.category_colors);
+
+        ListView listView = rootView.findViewById(R.id.list);
+
         listView.setAdapter(itemsAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -56,18 +82,28 @@ public class ColorsActivity extends AppCompatActivity {
                 Word word = words.get(position);
 
                 releaseMediaPlayer();
-                mediaPlayer = MediaPlayer.create(ColorsActivity.this , word.getmSoundId());
-                mediaPlayer.start();
 
-                mediaPlayer.setOnCompletionListener(mcompletionListener);
+                int result = maudioManager.requestAudioFocus(mOnAudioFocusChangeListener,
+                        AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+
+                if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+
+                    mediaPlayer = MediaPlayer.create(getActivity(), word.getmSoundId());
+                    mediaPlayer.start();
+
+                    mediaPlayer.setOnCompletionListener(mcompletionListener);
+                }
             }
         });
+
+
+
+        return rootView;
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
-
         releaseMediaPlayer();
     }
 
@@ -82,6 +118,8 @@ public class ColorsActivity extends AppCompatActivity {
             // setting the media player to null is an easy way to tell that the media player
             // is not configured to play an audio file at the moment.
             mediaPlayer = null;
+
+            maudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
         }
     }
 }
