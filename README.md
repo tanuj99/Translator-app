@@ -1,1 +1,1 @@
-Miwok Language Translator App
+Miwok Language Translator Android App 
